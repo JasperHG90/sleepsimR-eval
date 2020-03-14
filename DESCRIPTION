@@ -1,0 +1,15 @@
+Package: sleepsimReval
+Type: Package
+Title: Evaluation functions for my simulation study
+Version: 0.1.0
+Author: Jasper Ginn
+Maintainer: Jasper Ginn <jasperginn@gmail.com>
+Description: This R library contains functions that I use
+    to evaluate the results of my simulation study. It also
+    contains some helper functions to parse the results.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    testthat
+RoxygenNote: 7.0.2
