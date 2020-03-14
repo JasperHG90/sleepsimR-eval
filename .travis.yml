@@ -1,0 +1,18 @@
+# Travis file
+# See https://docs.travis-ci.com/user/languages/r/
+
+language: R
+sudo: false
+cache: packages
+warnings_are_errors: false
+
+r_packages:
+  - covr
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
+
+addons:
+  apt:
+    packages:
+      - libxml2-dev
