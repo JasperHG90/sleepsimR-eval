@@ -2,7 +2,7 @@ context("Test allocation methods and class")
 
 test_that("Can load allocations file from disk and convert to data frame",{
   # Load
-  allocs <- read_allocations_file("tests/testthat/allocations.json")
+  allocs <- read_allocations_file("allocations.json")
   expect_s3_class(allocs, "sleepsimR_allocations")
   expect_named(allocs, "abcd")
   expect_length(allocs, 1)
