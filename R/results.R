@@ -6,6 +6,8 @@
 #'
 #' @return
 #'
+#' @importFrom jsonlite read_json
+#'
 #' @export
 parse_sleepsimR_result <- function(path) {
   # Check file
@@ -26,6 +28,8 @@ parse_sleepsimR_result <- function(path) {
 #'
 #' @return
 #'
+#' @importFrom jsonlite read_json
+#'
 #' @export
 parse_sleepsimR_results <- function(folder_path) {
   # Check folder exists
@@ -45,3 +49,39 @@ parse_sleepsimR_results <- function(folder_path) {
   # Return
   return(res)
 }
+
+#' Get method
+#'
+#' @param x an object of type sleepsimR_result
+#'
+#' @return
+#'
+#' @export
+get <- function(x, ...) {
+  UseMethod("get", x)
+}
+#' @export
+get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid','emiss_mu_bar','gamma_int_bar',
+                                            'emiss_var_bar','emiss_varmu_bar','credible_intervals','label_switch',
+                                            'state_order')) {
+  # Match arg
+  var <- match.arg(var)
+  # Subset
+  out <- x[[var]]
+  # Switch. Depends on output type how it should be postprocessed
+  # ...
+  return(out)
+}
+#' @export
+get.sleepsimR_results <- function(x, var = c('uid','scenario_uid','iteration_uid','emiss_mu_bar','gamma_int_bar',
+                                             'emiss_var_bar','emiss_varmu_bar','credible_intervals','label_switch',
+                                             'state_order'),
+                                  type = c("list", "data_frame")) {
+  # Match arg
+  var <- match.arg(var)
+  # Subset
+  out <- lapply(x, function(y) get(y, var=var))
+  return(out)
+}
+
+# Postprocessing utility function for parameter estimates
