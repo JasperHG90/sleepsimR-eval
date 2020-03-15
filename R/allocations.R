@@ -60,7 +60,7 @@ read_allocations_file <- function(path) {
 #' }
 #'
 #' @export
-as.data.frame.sleepsimR_allocations <- function(x, ...) {
+as.data.frame.sleepsimR_allocations <- function(x) {
   # Convert list to df
   cont_ids <- names(x)
   x_df <- do.call(rbind.data.frame, unname(x))
@@ -70,3 +70,18 @@ as.data.frame.sleepsimR_allocations <- function(x, ...) {
   return(x_df[,c(5,1,2,3,4)])
 }
 
+#' Compute the average runtime of the allocations
+#'
+#' @param x object of type sleepsimR_allocations
+#'
+#' @return numeric scalar. Average runtime across all iterations.
+#'
+#' @export
+average_runtime <- function(x, ...) {
+  UseMethod("average_runtime", x)
+}
+#' @export
+average_runtime.sleepsimR_allocations <- function(x) {
+  # Return mean of runtime data
+  return(mean(vapply(x, function(x) x$runtime_minutes, 0.0)))
+}
