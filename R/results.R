@@ -15,7 +15,7 @@ parse_sleepsimR_result <- function(path) {
     stop(paste0("File '", path, "' does not exist."))
   }
   # Load json
-  rf <- jsonlite::read_json(f)
+  rf <- jsonlite::read_json(path)
   # Add structure
   class(rf) <- "sleepsimR_result"
   # Return
@@ -61,15 +61,24 @@ get <- function(x, ...) {
   UseMethod("get", x)
 }
 #' @export
+# TODO: add label switch postprocess
 get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid','emiss_mu_bar','gamma_int_bar',
-                                            'emiss_var_bar','emiss_varmu_bar','credible_intervals','label_switch',
-                                            'state_order')) {
+                                            'emiss_var_bar','emiss_varmu_bar','credible_intervals','state_order')) {
   # Match arg
   var <- match.arg(var)
-  # Subset
-  out <- x[[var]]
+  # Get number of states
+  m <- length(x$emiss_mu_bar[[1]][[1]])
   # Switch. Depends on output type how it should be postprocessed
-  # ...
+  out <- switch(var,
+         uid = x[[var]],
+         scenario_uid = x[[var]],
+         iteration_uid = x[[var]],
+         emiss_mu_bar = postprocess_param_est(x[[var]],m),
+         gamma_int_bar = postprocess_gamma_int(x[[var]],m),
+         emiss_var_bar = postprocess_param_est(x[[var]],m),
+         emiss_varmu_bar = postprocess_param_est(x[[var]],m),
+         credible_intervals = postprocess_ci(x[[var]],m),
+         state_order = postprocess_order(x[[var]],m))
   return(out)
 }
 #' @export
@@ -79,9 +88,125 @@ get.sleepsimR_results <- function(x, var = c('uid','scenario_uid','iteration_uid
                                   type = c("list", "data_frame")) {
   # Match arg
   var <- match.arg(var)
+  type <- match.arg(type)
   # Subset
   out <- lapply(x, function(y) get(y, var=var))
-  return(out)
+  if(type == "list") {
+    return(out)
+  } else {
+    return(do.call(rbind.data.frame, out))
+  }
 }
 
-# Postprocessing utility function for parameter estimates
+#' Postprocessing utility function for parameter estimates
+#'
+#' @param z
+#' @param m integer. Number of hidden states
+#'
+#' @return
+postprocess_param_est <- function(z, m) {
+  # Create names
+  nams <- paste0("state", 1:m)
+  # n dep
+  n_dep <- length(z)
+  # Add to each
+  for(idx in seq_along(z)) {
+    names(z[[idx]]$mean) <- nams
+    names(z[[idx]]$SE) <- nams
+  }
+  # To data frame
+  df <- as.data.frame(z)
+  # Replace periods by underscores
+  colnames(df) <- gsub("\\.", "_", colnames(df))
+  # Return
+  return(df)
+}
+
+#' Postprocess utility function for gamma_int_bar
+#'
+#' @param z
+#' @param m
+#'
+#' @return
+postprocess_gamma_int <- function(z, m) {
+  # Number of values is equal to m x (m-1)
+  # Make names
+  nams <- c()
+  for(idx_col in 1:m) {
+    for(idx_row in 2:m) {
+      nams <- c(nams, paste0("int_S",idx_col, "toS", idx_row))
+    }
+  }
+  # Subset mean
+  smean <- z$mean
+  # Ignore SE --> names
+  names(smean) <- nams
+  # data frame and return
+  return(data.frame(smean))
+}
+
+#' Postprocess credible intervals
+#'
+#' @param z
+#' @param m
+#'
+#' @return
+postprocess_ci <- function(z, m) {
+  # Create names
+  out_mp <- vector("list", length(z))
+  for(lst_idx in seq_along(z)) {
+    tmp <- z[[lst_idx]]
+    nm <- names(z)[lst_idx]
+    if(nm == "gamma_int_bar") {
+      # Make names
+      nams <- c()
+      for(idx_col in 1:m) {
+        for(idx_row in 2:m) {
+          for(rngnm in c("lower", "upper")) {
+            nams <- c(nams, paste0("gamma_int_bar_S",idx_col, "toS", idx_row, "_", rngnm))
+          }
+        }
+      }
+      # Add names
+      names(tmp) <- nams
+      # To data frame
+      out_mp[[lst_idx]] <- as.data.frame(tmp)
+    } else {
+      for(var_idx in seq_along(tmp)) {
+        nms <- c()
+        for(ele_idx in 1:(length(tmp[[var_idx]])/2)) {
+          nms <- c(nms, c(paste0("state", ele_idx,"_lower"), paste0("state", ele_idx,"_upper")))
+        }
+        names(tmp[[var_idx]]) <- nms
+      }
+      tmpdf <- as.data.frame(tmp)
+      colnames(tmpdf) <- gsub("\\.", "_", colnames(tmpdf))
+      out_mp[[lst_idx]] <-tmpdf
+    }
+  }
+  # Cbind
+  return(
+    do.call(cbind.data.frame, out_mp)
+  )
+}
+
+#' Postprocess state order
+#'
+#' @param z
+#' @param m
+#'
+#' @return
+postprocess_order <- function(z, m) {
+  tmp_out <- vector("list", length(z))
+  for(idx in seq_along(z)) {
+    names(z[[idx]]) <- paste0("state", 1:m)
+  }
+  # Return data frame
+  tmpdf <- as.data.frame(z)
+  colnames(tmpdf) <- gsub("\\.", "_", colnames(tmpdf))
+  return(
+    tmpdf
+  )
+}
+
+
