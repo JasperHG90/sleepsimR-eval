@@ -13,7 +13,8 @@ LazyData: true
 Imports:
     jsonlite,
     lubridate,
-    magrittr
+    magrittr,
+    ggplot2
 Suggests: 
     testthat
 URL:
