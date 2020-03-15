@@ -10,6 +10,14 @@ Description: This R library contains functions that I use
 License: MIT
 Encoding: UTF-8
 LazyData: true
+Imports:
+    jsonlite,
+    lubridate,
+    magrittr
 Suggests: 
     testthat
+URL:
+    https://github.com/JasperHG90/sleepsimReval
+BugReports:
+    https://github.com/JasperHG90/sleepsimReval/issues
 RoxygenNote: 7.0.2
