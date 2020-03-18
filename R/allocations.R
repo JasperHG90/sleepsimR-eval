@@ -35,7 +35,7 @@ read_allocations_file <- function(path) {
     x$ts_request <- lubridate::as_datetime(x$ts_request)
     x$ts_finished <- lubridate::as_datetime(x$ts_finished)
     x$status <- NULL
-    x$runtime_minutes <- as.numeric(difftime(x$ts_finished, x$ts_request))
+    x$runtime_minutes <- as.numeric(difftime(x$ts_finished, x$ts_request, units = "min"))
     return(x)
   })
   # Filter null

@@ -4,7 +4,7 @@
 \alias{as.data.frame.sleepsimR_allocations}
 \title{Convert allocations to data frame}
 \usage{
-\method{as.data.frame}{sleepsimR_allocations}(x, ...)
+\method{as.data.frame}{sleepsimR_allocations}(x)
 }
 \arguments{
 \item{x}{object of type sleepsimR_allocations}
