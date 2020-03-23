@@ -73,7 +73,7 @@ get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid'
          uid = x[[var]],
          scenario_uid = x[[var]],
          iteration_uid = x[[var]],
-         PD_subj = postprocess_subj_specific(x[[var]], m),
+         PD_subj = postprocess_subject_specific(x[[var]], m),
          emiss_mu_bar = postprocess_param_est(x[[var]],m),
          gamma_int_bar = postprocess_gamma_int(x[[var]],m),
          emiss_var_bar = postprocess_param_est(x[[var]],m),
@@ -244,7 +244,9 @@ postprocess_subject_specific <- function(z, m) {
     subj_out[[idx]] <- subj_est
   }
   # Bind
-  return(
-    do.call(rbind.data.frame, subj_out)
-  )
+  b <- do.call(rbind.data.frame, subj_out)
+  # Unname rows
+  row.names(b) <- 1:nrow(b)
+  # Return
+  return(b)
 }
