@@ -62,7 +62,7 @@ get <- function(x, ...) {
 }
 #' @export
 # TODO: add label switch postprocess
-get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid','emiss_mu_bar','gamma_int_bar',
+get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid', 'PD_subj', 'emiss_mu_bar','gamma_int_bar',
                                             'emiss_var_bar','emiss_varmu_bar','credible_intervals','state_order')) {
   # Match arg
   var <- match.arg(var)
@@ -73,6 +73,7 @@ get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid'
          uid = x[[var]],
          scenario_uid = x[[var]],
          iteration_uid = x[[var]],
+         PD_subj = postprocess_subj_specific(x[[var]], m),
          emiss_mu_bar = postprocess_param_est(x[[var]],m),
          gamma_int_bar = postprocess_gamma_int(x[[var]],m),
          emiss_var_bar = postprocess_param_est(x[[var]],m),
@@ -82,7 +83,7 @@ get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid'
   return(out)
 }
 #' @export
-get.sleepsimR_results <- function(x, var = c('uid','scenario_uid','iteration_uid','emiss_mu_bar','gamma_int_bar',
+get.sleepsimR_results <- function(x, var = c('uid','scenario_uid','iteration_uid', 'PD_subj','emiss_mu_bar','gamma_int_bar',
                                              'emiss_var_bar','emiss_varmu_bar','credible_intervals','label_switch',
                                              'state_order'),
                                   type = c("list", "data_frame")) {
@@ -112,6 +113,7 @@ postprocess_param_est <- function(z, m) {
   # Add to each
   for(idx in seq_along(z)) {
     names(z[[idx]]$mean) <- nams
+    names(z[[idx]]$median) <- nams
     names(z[[idx]]$SE) <- nams
   }
   # To data frame
@@ -209,4 +211,40 @@ postprocess_order <- function(z, m) {
   )
 }
 
-
+#' Postprocess subject-specific metrics
+#'
+#' @param z
+#' @param m
+#'
+#' @return
+postprocess_subject_specific <- function(z, m) {
+  # Number of subjects
+  subjs <- paste0("subject_", 1:length(z))
+  # Depvar/state names
+  depvars <- c("EEG_mean_beta", "EOG_median_theta", "EOG_min_beta")
+  # States
+  states <- c("state_1", "state_2", "state_3")
+  # Expand grid
+  grid <- expand.grid(states, depvars)
+  # Paste
+  statenames <- paste0(grid$Var2, "_", grid$Var1)
+  # For each subject, make data frame
+  subj_out <- vector("list", length(z))
+  names(subj_out) <- subjs
+  for(idx in seq_along(subjs)) {
+    subj_est <- z[[idx]]
+    for(est_idx in seq_along(subj_est)) {
+      names(subj_est[[est_idx]]) <- statenames
+    }
+    # Bind
+    subj_est <- do.call(cbind.data.frame, subj_est)
+    # Replace periods
+    colnames(subj_est) <- gsub("\\.", "_", colnames(subj_est))
+    # Add to results
+    subj_out[[idx]] <- subj_est
+  }
+  # Bind
+  return(
+    do.call(rbind.data.frame, subj_out)
+  )
+}
