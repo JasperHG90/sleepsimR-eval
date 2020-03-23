@@ -9,6 +9,6 @@ test_that("Can load allocations file from disk and convert to data frame",{
   expect_length(allocs[[1]], 4)
   expect_named(allocs[[1]], c("iteration_id", "ts_request", "ts_finished", "runtime_minutes"))
   # Compute average runtime
-  ar <- round(average_runtime(allocs),1)
-  expect_equal(ar, 2.6)
+  ar <- round(average_runtime(allocs),2)
+  expect_equal(ar, 0.04)
 })
