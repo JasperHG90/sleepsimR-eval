@@ -82,3 +82,15 @@ coverage <- function(CI, true_param_value) {
 coverage_MCMC_SE <- function(coverage, nsim) {
   sqrt((coverage * (1-coverage))/(nsim))
 }
+
+#' Root-Mean Squared Error (RMSE)
+#'
+#' @param values XX
+#' @param ref XX
+#'
+#' @return XX
+RMSE <- function(values, ref) {
+  return(
+    sqrt(mean((values - ref)^2))
+  )
+}
