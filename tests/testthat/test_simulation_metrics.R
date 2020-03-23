@@ -47,3 +47,19 @@ test_that("Can compute coverage and MCMC error", {
   # Expect coverage of scenario 2 to be higher than scenario 1
   expect_gt(tv2[1], tv[1])
 })
+
+test_that("Can compute RMSE", {
+  # True mean
+  tm <- 10.8
+  # Simulated values
+  set.seed(367255)
+  # Create mock values
+  val1 <- rnorm(100, tm, 1)
+  val2 <- rnorm(1000, tm, 1)
+  # Compute RMSE
+  out_rmse1 <- round(RMSE(val1, tm), 3)
+  out_rmse2 <- round(RMSE(val2, tm), 3)
+  expect_equal(out_rmse1, 1.144)
+  expect_equal(out_rmse2, 1.005)
+  expect_gt(out_rmse1, out_rmse2)
+})
