@@ -1,5 +1,5 @@
 context("Test result methods and class")
-f <- "tests/testthat/results"
+f <- "results"
 
 test_that("Can parse result files", {
   # Parse results
