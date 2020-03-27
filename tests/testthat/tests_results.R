@@ -10,7 +10,7 @@ test_that("Can parse result files", {
   expect_length(r, 2)
   expect_length(r[[1]], 11)
   expect_named(r[[1]], c('uid','scenario_uid','iteration_uid','PD_subj','emiss_mu_bar',
-                         'gamma_int_bar','emiss_var_bar','emiss_varmu_bar','credible_intervals',
+                         'gamma_prob_bar','emiss_var_bar','emiss_varmu_bar','credible_intervals',
                          'label_switch','state_order'))
 })
 
@@ -19,13 +19,13 @@ test_that("Can get specific result fields", {
   r <- parse_sleepsimR_results(f)
   # Get fields
   for(v in c('uid','scenario_uid','iteration_uid','PD_subj','emiss_mu_bar',
-               'gamma_int_bar','emiss_var_bar','emiss_varmu_bar','credible_intervals', 'state_order')) {
+               'gamma_prob_bar','emiss_var_bar','emiss_varmu_bar','credible_intervals', 'state_order')) {
     g <- get(r, v)
     if(v %in% c("uid", "scenario_uid", "iteration_uid")) {
       expect_length(g, 2)
       expect_type(g[[1]], "character")
       expect_named(g)
-    } else if(v %in% c("PD_subj", "emiss_mu_bar", "gamma_int_bar", "emiss_var_bar",
+    } else if(v %in% c("PD_subj", "emiss_mu_bar", "gamma_prob_bar", "emiss_var_bar",
                        "emiss_varmu_bar", "credible_intervals", "state_order")) {
       expect_length(g, 2)
       expect_type(g[[1]], "list")
