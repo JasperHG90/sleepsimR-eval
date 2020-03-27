@@ -2,7 +2,7 @@
 % Please edit documentation in R/results.R
 \name{postprocess_gamma_int}
 \alias{postprocess_gamma_int}
-\title{Postprocess utility function for gamma_int_bar}
+\title{Postprocess utility function for gamma_prob_bar}
 \usage{
 postprocess_gamma_int(z, m)
 }
@@ -13,5 +13,5 @@ postprocess_gamma_int(z, m)
 
 }
 \description{
-Postprocess utility function for gamma_int_bar
+Postprocess utility function for gamma_prob_bar
 }

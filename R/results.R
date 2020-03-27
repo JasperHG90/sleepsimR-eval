@@ -62,7 +62,7 @@ get <- function(x, ...) {
 }
 #' @export
 # TODO: add label switch postprocess
-get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid', 'PD_subj', 'emiss_mu_bar','gamma_int_bar',
+get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid', 'PD_subj', 'emiss_mu_bar','gamma_prob_bar',
                                             'emiss_var_bar','emiss_varmu_bar','credible_intervals','state_order')) {
   # Match arg
   var <- match.arg(var)
@@ -75,7 +75,7 @@ get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid'
          iteration_uid = x[[var]],
          PD_subj = postprocess_subject_specific(x[[var]], m),
          emiss_mu_bar = postprocess_param_est(x[[var]],m),
-         gamma_int_bar = postprocess_gamma_int(x[[var]],m),
+         gamma_prob_bar = postprocess_gamma_int(x[[var]],m),
          emiss_var_bar = postprocess_param_est(x[[var]],m),
          emiss_varmu_bar = postprocess_param_est(x[[var]],m),
          credible_intervals = postprocess_ci(x[[var]],m),
@@ -83,7 +83,7 @@ get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid'
   return(out)
 }
 #' @export
-get.sleepsimR_results <- function(x, var = c('uid','scenario_uid','iteration_uid', 'PD_subj','emiss_mu_bar','gamma_int_bar',
+get.sleepsimR_results <- function(x, var = c('uid','scenario_uid','iteration_uid', 'PD_subj','emiss_mu_bar','gamma_prob_bar',
                                              'emiss_var_bar','emiss_varmu_bar','credible_intervals','label_switch',
                                              'state_order'),
                                   type = c("list", "data_frame")) {
@@ -124,7 +124,7 @@ postprocess_param_est <- function(z, m) {
   return(df)
 }
 
-#' Postprocess utility function for gamma_int_bar
+#' Postprocess utility function for gamma_prob_bar
 #'
 #' @param z
 #' @param m
@@ -135,7 +135,7 @@ postprocess_gamma_int <- function(z, m) {
   # Make names
   nams <- c()
   for(idx_col in 1:m) {
-    for(idx_row in 2:m) {
+    for(idx_row in 1:m) {
       nams <- c(nams, paste0("int_S",idx_col, "toS", idx_row))
     }
   }
@@ -159,13 +159,13 @@ postprocess_ci <- function(z, m) {
   for(lst_idx in seq_along(z)) {
     tmp <- z[[lst_idx]]
     nm <- names(z)[lst_idx]
-    if(nm == "gamma_int_bar") {
+    if(nm == "gamma_prob_bar") {
       # Make names
       nams <- c()
       for(idx_col in 1:m) {
         for(idx_row in 2:m) {
           for(rngnm in c("lower", "upper")) {
-            nams <- c(nams, paste0("gamma_int_bar_S",idx_col, "toS", idx_row, "_", rngnm))
+            nams <- c(nams, paste0("gamma_prob_bar_S",idx_col, "toS", idx_row, "_", rngnm))
           }
         }
       }
