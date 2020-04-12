@@ -163,7 +163,7 @@ postprocess_ci <- function(z, m) {
       # Make names
       nams <- c()
       for(idx_col in 1:m) {
-        for(idx_row in 2:m) {
+        for(idx_row in 1:m) {
           for(rngnm in c("lower", "upper")) {
             nams <- c(nams, paste0("gamma_prob_bar_S",idx_col, "toS", idx_row, "_", rngnm))
           }
