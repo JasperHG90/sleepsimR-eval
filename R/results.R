@@ -29,9 +29,13 @@ parse_sleepsimR_result <- function(path) {
 #' @return
 #'
 #' @importFrom jsonlite read_json
+#' @importFrom future plan
+#' @importFrom future.apply future_lapply
 #'
 #' @export
 parse_sleepsimR_results <- function(folder_path) {
+  # Match arg
+  plan <- match.arg(plan)
   # Check folder exists
   if(!dir.exists(folder_path)) {
     stop(paste0("Folder '", folder_path, "' does not exist."))
@@ -40,8 +44,12 @@ parse_sleepsimR_results <- function(folder_path) {
   f <- list.files(folder_path)
   # Make filepaths
   fp <- file.path(folder_path, f)
+  # Set plan
+  plan(future_plan)
   # Read data
-  res <- lapply(fp, parse_sleepsimR_result)
+  res <- future_lapply(fp, parse_sleepsimR_result,
+                       future.packages = c("jsonlite"),
+                       future.globals = c("parse_sleepsimR_result"))
   # Set names on list
   names(res) <- vapply(res, function(x) x$uid, "char")
   # Add structure

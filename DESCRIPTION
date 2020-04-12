@@ -15,9 +15,13 @@ Imports:
     lubridate,
     magrittr,
     ggplot2,
-    future
+    future,
+    sleepsimR,
+    dplyr,
+    tidyr
 Suggests: 
     testthat
+Remotes: JasperHG90/sleepsimR@99e7a8e0dabf4f732d0ce1bab3a8a527f42ca73d
 URL:
     https://github.com/JasperHG90/sleepsimReval
 BugReports:
