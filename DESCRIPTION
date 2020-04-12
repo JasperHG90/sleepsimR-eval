@@ -18,7 +18,9 @@ Imports:
     future,
     sleepsimR,
     dplyr,
-    tidyr
+    tidyr,
+    purrr,
+    coda
 Suggests: 
     testthat
 Remotes: JasperHG90/sleepsimR@99e7a8e0dabf4f732d0ce1bab3a8a527f42ca73d
