@@ -96,3 +96,17 @@ MSE <- function(values, ref) {
     mean((values - ref)^2)
   )
 }
+
+#' MSE MCMC Standard Error
+#'
+#' @param MSE
+#' @param estimates
+#' @param true_value
+#' @param nsim
+#'
+#' @return YY
+MSE_MCMC_SE <- function(MSE, estimates, true_value, nsim) {
+  a <- sum(((estimates - true_value)^2 - MSE)^2)
+  b <- nsim * (nsim - 1)
+  return(sqrt(a/b))
+}
