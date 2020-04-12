@@ -1,7 +1,7 @@
 Package: sleepsimReval
 Type: Package
 Title: Evaluation functions for my simulation study
-Version: 0.1.0
+Version: 0.3.0
 Author: Jasper Ginn
 Maintainer: Jasper Ginn <jasperginn@gmail.com>
 Description: This R library contains functions that I use
@@ -14,7 +14,8 @@ Imports:
     jsonlite,
     lubridate,
     magrittr,
-    ggplot2
+    ggplot2,
+    future
 Suggests: 
     testthat
 URL:
