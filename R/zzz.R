@@ -5,7 +5,8 @@
   options(
     sleepsimReval = list(
       # Future library plan
-      "plan" = "sequential"
+      "plan" = "sequential",
+      "plan_set" = FALSE
     )
   )
 }
