@@ -110,3 +110,75 @@ MSE_MCMC_SE <- function(MSE, estimates, true_value, nsim) {
   b <- nsim * (nsim - 1)
   return(sqrt(a/b))
 }
+
+#' Wrapper function that computes all simulation metrics
+#'
+#' This wrapper function is compatible with dplyr and can be called in a dplyr chain
+#'  of arguments.
+#'
+#' @param true_values vector of length n. Contains true population values.
+#' @param simulated_values vector of length n. Contains simulated values.
+#' @param lower_cci vector of length n. Lower 95\% CCI.
+#' @param lower_cci vector of length n. Upper 95\% CCI.
+#' @param compute_multimodal boolean. If TRUE, this function will compute a test on the simulated parameter values to check if the distribution of parameter estimates is multimodal. See \link[multimode]{modetest}.
+#'
+#' @importFrom multimode modetest
+#'
+#' @return data frame containing:
+#' \itemize{
+#'   \item{bias}{percent bias of the simulation scenario, computed as a percentage relative to the true value.}
+#'   \item{bias_mcmc_se}{MCMC standard error of bias estimate, computed as a percentage relative to the bias estimate.}
+#'   \item{empirical_se}{empirical standard error computed from the simulated values.}
+#'   \item{empirical_se_mcmc_se}{MCMC standard error of the empirical SE.}
+#'   \item{MSE}{Mean-Squared Error of the simulated values.}
+#'   \item{MSE_mcmc_se}{MCMC standard error of the simulated values.}
+#'   \item{coverage}{Coverage given the 95\% CCI.}
+#'   \item{coverage_mcmc_se}{MCMC standard error of coverage.}
+#'   \item{bias_corr_coverage}{Bias-adjusted coverage. Instead of using the true population value, use the mean of the simulated values. Useful to check whether poor coverage is the result of bias. See 'See also' for reference.}
+#'   \item{bias_corr_coverage_mcmc_se}{MCMC standard error of bias-adjusted coverage.}
+#'   \item{multimodal}{p-value of the \link[multimode]{modetest} used to check for multimodal distributions.}
+#' }
+#'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
+#' @examples
+#' \dontrun{
+#' tst <- data %>%
+#'    group_by(scenario_id) %>%
+#'    # This is how you use the function
+#'    do(summarize_simulation_metrics(.$true_values, .$simulated_values
+#'                                    .$lower_cci, .$upper_cci, FALSE))
+#' }
+#'
+summarize_simulation_scenario <- function(true_values, simulated_values,
+                                          lower_cci, upper_cci,
+                                          compute_multimodal = FALSE) {
+  out_bias <- unname(bias(true_values[1], simulated_values))
+  out_MSE <- unname(MSE(s, true_values[1]))
+  out_ESE <- unname(emperical_SE(simulated_values))
+  # Compute coverage
+  cci <- map2(lower_cci, upper_cci, function(x,y) c(x, y))
+  out_coverage <- unname(coverage(cci, true_values[1]))
+  # Compute bias-corrected coverage
+  out_coverage_bc <- unname(coverage(cci, mean(simulated_values)))
+  df <- data.frame(
+    "bias" = (out_bias[1] / true_values[1]) * 100,
+    "bias_mcmc_se" = (out_bias[2] / out_bias[1]) * 100,
+    "empirical_se" = out_ESE[1],
+    "empirical_se_mcmc_se" = out_ESE[2],
+    "MSE" = out_MSE,
+    "MSE_mcmc_se" = MSE_MCMC_SE(out_MSE,
+                                simulated_values,
+                                true_values[1],
+                                length(simulated_values)),
+    "coverage" = out_coverage[1],
+    "coverage_mcmc_se" = out_coverage[2],
+    "bias_corr_coverage" = out_coverage_bc[1],
+    "bias_corr_coverage_mcmc_se" = out_coverage_bc[2]
+  )
+  if(compute_multimodal) {
+    df$multimodal <- modetest(s, mod0 = 1)$p.value
+  }
+  return(df)
+}
+

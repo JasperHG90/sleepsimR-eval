@@ -22,7 +22,8 @@ Imports:
     purrr,
     coda,
     mcmcplots,
-    mHMMbayes
+    mHMMbayes,
+    multimode
 Suggests: 
     testthat
 Remotes: 

@@ -127,6 +127,7 @@ thin_mcmc <- function(x, thin = 5) {
 #' Combine two separate chains into one chain
 #'
 #' @importFrom coda mcmc
+#' @importFrom coda as.mcmc.list
 combine_mcmc_chains <- function(mod1, mod2, param, var, thin = 5) {
   # Retrieve posteriors
   mod1b <- sleepsimR::burn(mod1)[[param]]
