@@ -21,6 +21,7 @@ Imports:
     tidyr,
     purrr,
     coda,
+    mcmcplots,
     mHMMbayes
 Suggests: 
     testthat
