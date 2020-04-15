@@ -19,16 +19,16 @@ test_that("Can compute bias and MCMC error for bias", {
   expect_lt(b2[2], b[2])
 })
 
-test_that("Can compute emperical SE and MCMC error", {
+test_that("Can compute empirical SE and MCMC error", {
   # True value
   tv <- 5
   # Simulated values
   set.seed(4445896)
   sv <- tv + rnorm(500)
   # Compute
-  ese <- emperical_SE(sv)
+  ese <- empirical_SE(sv)
   expect_equal(unname(round(ese, 2)), c(1.02, 0.03))
-  expect_named(ese, c("emperical_se", "MCMC_SE"))
+  expect_named(ese, c("empirical_se", "MCMC_SE"))
 })
 
 test_that("Can compute coverage and MCMC error", {
