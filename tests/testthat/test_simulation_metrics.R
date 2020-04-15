@@ -64,9 +64,74 @@ test_that("Can compute MSE", {
   val1 <- rnorm(100, tm, 1)
   val2 <- rnorm(1000, tm, 1)
   # Compute RMSE
-  out_mse1 <- round(MSE(val1, tm), 3)
-  out_mse2 <- round(MSE(val2, tm), 3)
-  expect_equal(out_mse1, 1.31)
-  expect_equal(out_mse2, 1.009)
-  expect_gt(out_mse1, out_mse2)
+  out_mse1 <- unname(round(MSE(val1, tm), 3))
+  out_mse2 <- unname(round(MSE(val2, tm), 3))
+  expect_equal(out_mse1[1], 1.31)
+  expect_equal(out_mse2[1], 1.009)
+  expect_gt(out_mse1[1], out_mse2[2])
+  # MCMC error should be larger
+  expect_gt(out_mse1[2], out_mse2[2])
+})
+
+test_that("Can compute modSE", {
+  # True mean
+  tm <- 10.8
+  # Simulated values
+  set.seed(367255)
+  # Create mock values
+
+  # Scenario 1
+  # 100 samples of 100 observations each
+  # SE should be larg here (smallest sample)
+  # MCMC SE should be largest here (smallest number of iterations)
+  mv1 <- unlist(lapply(1:100, function(x) {
+    val1 <- rnorm(100, tm, 1)
+    # Compute SE
+    return(sd(val1) / sqrt(length(val1)))
+  }))
+
+  # Scenario 2
+  # 1000 samples of 100 observations each
+  # SE should be ~same as in scenario 1 (sample size does not change).
+  # MCMC SE should be smaller than scenario 1 (many more samples of same sample size)
+  mv2 <- unlist(lapply(1:1000, function(x) {
+    val1 <- rnorm(100, tm, 1)
+    # Compute SE
+    return(sd(val1) / sqrt(length(val1)))
+  }))
+
+  # Scenario 3
+  # 100 samples of 1000 observations each
+  # SE should be smaller than scenarios 1 & 2 (sample size is larger).
+  # MCMC SE should be about the same relative to the SE value (same number of iterations)
+  mv3 <- unlist(lapply(1:100, function(x) {
+    val1 <- rnorm(1000, tm, 1)
+    # Compute SE
+    return(sd(val1) / sqrt(length(val1)))
+  }))
+
+  # Scenario 4
+  # 1000 samples of 1000 observations each
+  # SE should be ~same as in scenario 3 (sample size is the same).
+  # MCMC SE should be smaller than scenario 3 (larger number of iterations)
+  mv4 <- unlist(lapply(1:1000, function(x) {
+    val1 <- rnorm(1000, tm, 1)
+    # Compute SE
+    return(sd(val1) / sqrt(length(val1)))
+  }))
+
+  # Compute modSE
+  out_modse1 <- round(unname(average_model_SE(mv1)), 5)
+  out_modse2 <- round(unname(average_model_SE(mv2)), 5)
+  out_modse3 <- round(unname(average_model_SE(mv3)), 5)
+  out_modse4 <- round(unname(average_model_SE(mv4)), 5)
+
+  # Expectations
+  expect_equal(round(out_modse1[1],2), round(out_modse2[1], 2))
+  expect_gt(out_modse1[2], out_modse2[2])
+  expect_lt(out_modse3[1], out_modse2[1])
+  expect_equal(round(out_modse3[2] / out_modse3[1], 3),
+               round(out_modse2[2] / out_modse2[1], 3))
+  expect_equal(round(out_modse4[1],3), round(out_modse3[1],3))
+  expect_lt(out_modse4[2], out_modse3[2])
 })

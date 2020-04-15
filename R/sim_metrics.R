@@ -37,20 +37,20 @@ bias_MCMC_SE <- function(x) {
   )
 }
 
-#' Compute the emperical SE
+#' Compute the empirical SE
 #'
 #' @param x numeric vector. Simulated parameter estimates
 #'
-#' @return numeric vector with two values: (1) Emperical standard error and (2) MCMC SE of this value
+#' @return numeric vector with two values: (1) empirical standard error and (2) MCMC SE of this value
 #'
 #' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
 #'
 #' @export
-emperical_SE <- function(x) {
+empirical_SE <- function(x) {
   ESE <- sqrt((1/(length(x) - 1)) * sum((x - mean(x))^2))
-  MCMCSE <- emperical_MCMC_SE(ESE, length(x))
+  MCMCSE <- empirical_MCMC_SE(ESE, length(x))
   ret <- c(ESE, MCMCSE)
-  names(ret) <- c("emperical_se", "MCMC_SE")
+  names(ret) <- c("empirical_se", "MCMC_SE")
   return(ret)
 }
 
@@ -61,7 +61,7 @@ emperical_SE <- function(x) {
 #' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
 #'
 #' @return numeric scalar. MCMC standard error.
-emperical_MCMC_SE <- function(emp_se, nsim) {
+empirical_MCMC_SE <- function(emp_se, nsim) {
   emp_se / sqrt(2*nsim - 1)
 }
 
@@ -106,9 +106,12 @@ coverage_MCMC_SE <- function(coverage, nsim) {
 #'
 #' @export
 MSE <- function(simulated_param_values, true_param_value) {
-  return(
-    mean((simulated_param_values - true_param_value)^2)
-  )
+  MSE_est <- mean((simulated_param_values - true_param_value)^2)
+  MSE_est_mcmc_se <- MSE_MCMC_SE(MSE_est, simulated_param_values,
+                                 true_param_value, length(simulated_param_values))
+  ret <- c(MSE_est, MSE_est_mcmc_se)
+  names(ret) <- c("MSE", "MCMC_SE")
+  return(ret)
 }
 
 #' MSE MCMC Standard Error
@@ -125,6 +128,43 @@ MSE_MCMC_SE <- function(MSE, estimates, true_value, nsim) {
   a <- sum(((estimates - true_value)^2 - MSE)^2)
   b <- nsim * (nsim - 1)
   return(sqrt(a/b))
+}
+
+#' Compute the average model SE
+#'
+#' @param SE the SD of the posterior distribution for each parameter in the simulation scenario.
+#'
+#' @return average model SE
+#'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
+#' @details Note that the SE here is not computed around the point estimate. Rather, it is taken from the posterior distribution of the parameter. We input SE (standard error), the formula needs the estimated variance. Hence, the SE is squared in the formula below.
+#'
+#' @export
+average_model_SE <- function(SE) {
+  n_sim <- length(SE)
+  modSE <- sqrt(1 / n_sim * sum(SE^2))
+  modSE_mcmc_se <- average_model_SE_mcmc_se(SE, length(SE), modSE)
+  ret <- c(modSE, modSE_mcmc_se)
+  names(ret) <- c("modSE", "MCMC_SE")
+  return(ret)
+}
+
+#' Compute the MCMC SE for the average model SE
+#'
+#' @param SE the SD of the posterior distribution for each parameter in the simulation scenario.
+#' @param nsim scalar. Number of iterations used in the scenario.
+#'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
+#' @return average model SE MCMC SE
+average_model_SE_mcmc_se <- function(SE, n_sim, modSE) {
+  avg_varest <- mean(SE^2)
+  num_a <- (1/(n_sim-1)) * sum((SE^2 - avg_varest) ^ 2)
+  den_a <- 4 * n_sim * modSE^2
+  return(
+    sqrt(num_a / den_a)
+  )
 }
 
 #' Wrapper function that computes all simulation metrics
@@ -172,15 +212,15 @@ summarize_simulation_scenario <- function(true_values, simulated_values,
                                           compute_multimodal = FALSE) {
   out_bias <- unname(bias(true_values[1], simulated_values))
   out_MSE <- unname(MSE(simulated_values, true_values[1]))
-  out_ESE <- unname(emperical_SE(simulated_values))
+  out_ESE <- unname(empirical_SE(simulated_values))
   # Compute coverage
   cci <- map2(lower_cci, upper_cci, function(x,y) c(x, y))
   out_coverage <- unname(coverage(cci, true_values[1]))
   # Compute bias-corrected coverage
   out_coverage_bc <- unname(coverage(cci, mean(simulated_values)))
   df <- data.frame(
-    "bias" = (out_bias[1] / true_values[1]) * 100,
-    "bias_mcmc_se" = (out_bias[2] / out_bias[1]) * 100,
+    "bias" = out_bias[1],
+    "bias_mcmc_se" = out_bias[2],
     "empirical_se" = out_ESE[1],
     "empirical_se_mcmc_se" = out_ESE[2],
     "MSE" = out_MSE,
