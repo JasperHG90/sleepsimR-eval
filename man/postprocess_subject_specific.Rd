@@ -7,10 +7,12 @@
 postprocess_subject_specific(z, m)
 }
 \arguments{
-\item{m}{}
+\item{z}{list. contains the MAP values of the parameter estimates for each subject.}
+
+\item{m}{integer. Number of hidden states}
 }
 \value{
-
+data frame with rows equal to the number of subjects and columns equal to the number of states x dependent variables x
 }
 \description{
 Postprocess subject-specific metrics

@@ -2,9 +2,9 @@
 
 #' Parse a sleepsimR result file
 #'
-#' @param path
+#' @param path path to a sleepsimR simulation results file in JSON format. For more information, consult the documentation <https://github.com/JasperHG90/sleepsimR-documentation>.
 #'
-#' @return
+#' @return object of class 'sleepsimR_result'. Contains the parsed parameter estimates, credible intervals etc.
 #'
 #' @importFrom jsonlite read_json
 #'
@@ -22,45 +22,12 @@ parse_sleepsimR_result <- function(path) {
   return(rf)
 }
 
-#' Get method
-#'
-#' @param x an object of type sleepsimR_result
-#'
-#' @return
-#'
-#' @export
-get <- function(x, ...) {
-  UseMethod("get", x)
-}
-#' @export
-get.sleepsimR_result <- function(x, var = c('uid','scenario_uid','iteration_uid', 'PD_subj', 'emiss_mu_bar','gamma_prob_bar',
-                                            'emiss_var_bar','emiss_varmu_bar','credible_intervals','state_order')) {
-  # Match arg
-  var <- match.arg(var)
-  # Get number of states
-  m <- length(x$emiss_mu_bar[[1]][[1]])
-  # Switch. Depends on output type how it should be postprocessed
-  out <- switch(var,
-         uid = x[[var]],
-         scenario_uid = x[[var]],
-         iteration_uid = x[[var]],
-         PD_subj = sleepsimReval:::postprocess_subject_specific(x[[var]], m),
-         emiss_mu_bar = sleepsimReval:::postprocess_param_est(x[[var]],m),
-         gamma_prob_bar = sleepsimReval:::postprocess_gamma_int(x[[var]],m),
-         emiss_var_bar = sleepsimReval:::postprocess_param_est(x[[var]],m),
-         emiss_varmu_bar = sleepsimReval:::postprocess_param_est(x[[var]],m),
-         credible_intervals = sleepsimReval:::postprocess_ci(x[[var]],m),
-         state_order = sleepsimReval:::postprocess_order(x[[var]],m))
-  return(out)
-}
-
-
 #' Postprocessing utility function for parameter estimates
 #'
-#' @param z
+#' @param z list. contains the MAP values of the parameter estimates.
 #' @param m integer. Number of hidden states
 #'
-#' @return
+#' @return data frame in which each parameter estimate has been placed in its own column.
 postprocess_param_est <- function(z, m) {
   # Create names
   nams <- paste0("state", 1:m)
@@ -82,10 +49,10 @@ postprocess_param_est <- function(z, m) {
 
 #' Postprocess utility function for gamma_prob_bar
 #'
-#' @param z
-#' @param m
+#' @param z list. contains the MAP values of the transition probabilities.
+#' @param m integer. Number of hidden states
 #'
-#' @return
+#' @return data frame in which each parameter estimate has been placed in its own column.
 postprocess_gamma_int <- function(z, m) {
   # Number of values is equal to m x (m-1)
   # Make names
@@ -105,10 +72,10 @@ postprocess_gamma_int <- function(z, m) {
 
 #' Postprocess credible intervals
 #'
-#' @param z
-#' @param m
+#' @param z list. contains the credible intervals of the transition probabilities.
+#' @param m integer. Number of hidden states
 #'
-#' @return
+#' @return data frame in which each CCI has been placed in its own column. (with _lower and _upper appended).
 postprocess_ci <- function(z, m) {
   # Create names
   out_mp <- vector("list", length(z))
@@ -148,31 +115,12 @@ postprocess_ci <- function(z, m) {
   )
 }
 
-#' Postprocess state order
-#'
-#' @param z
-#' @param m
-#'
-#' @return
-postprocess_order <- function(z, m) {
-  tmp_out <- vector("list", length(z))
-  for(idx in seq_along(z)) {
-    names(z[[idx]]) <- paste0("state", 1:m)
-  }
-  # Return data frame
-  tmpdf <- as.data.frame(z)
-  colnames(tmpdf) <- gsub("\\.", "_", colnames(tmpdf))
-  return(
-    tmpdf
-  )
-}
-
 #' Postprocess subject-specific metrics
 #'
-#' @param z
-#' @param m
+#' @param z list. contains the MAP values of the parameter estimates for each subject.
+#' @param m integer. Number of hidden states
 #'
-#' @return
+#' @return data frame with rows equal to the number of subjects and columns equal to the number of states x dependent variables x
 postprocess_subject_specific <- function(z, m) {
   # Number of subjects
   subjs <- paste0("subject_", 1:length(z))

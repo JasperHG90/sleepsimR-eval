@@ -7,10 +7,10 @@
 parse_sleepsimR_result(path)
 }
 \arguments{
-\item{path}{}
+\item{path}{path to a sleepsimR simulation results file in JSON format. For more information, consult the documentation <https://github.com/JasperHG90/sleepsimR-documentation>.}
 }
 \value{
-
+object of class 'sleepsimR_result'. Contains the parsed parameter estimates, credible intervals etc.
 }
 \description{
 Parse a sleepsimR result file

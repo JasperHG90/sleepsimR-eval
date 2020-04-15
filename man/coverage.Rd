@@ -17,3 +17,6 @@ numeric vector with two values: (1) Probability that the 95\% CI contains the tr
 \description{
 Compute coverage
 }
+\seealso{
+Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+}

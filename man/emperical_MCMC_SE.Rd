@@ -15,3 +15,6 @@ numeric scalar. MCMC standard error.
 \description{
 Compute the MCMC SE
 }
+\seealso{
+Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+}

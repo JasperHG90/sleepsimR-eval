@@ -20,3 +20,6 @@ Compute the parameter bias of a vector estimated parameters versus the ground-tr
 \details{
 This function computes the percentage bias by using the signed mean difference.
 }
+\seealso{
+Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+}

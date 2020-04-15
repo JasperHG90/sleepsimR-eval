@@ -10,6 +10,8 @@
 #'
 #' @details This function computes the percentage bias by using the signed mean difference.
 #'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
 #' @export
 bias <- function(true_param_value, simulated_param_values) {
   bias <- mean(simulated_param_values - true_param_value)
@@ -22,6 +24,8 @@ bias <- function(true_param_value, simulated_param_values) {
 #' MCMC Standard Error of the bias value
 #'
 #' @param x k-length numeric vector. k >= 1 and holds the parameter values of the estimated parameters.
+#'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
 #'
 #' @return Bias MCMC SE
 bias_MCMC_SE <- function(x) {
@@ -39,6 +43,8 @@ bias_MCMC_SE <- function(x) {
 #'
 #' @return numeric vector with two values: (1) Emperical standard error and (2) MCMC SE of this value
 #'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
 #' @export
 emperical_SE <- function(x) {
   ESE <- sqrt((1/(length(x) - 1)) * sum((x - mean(x))^2))
@@ -52,6 +58,8 @@ emperical_SE <- function(x) {
 #'
 #' @param x numeric vector. Simulated parameter estimates.
 #'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
 #' @return numeric scalar. MCMC standard error.
 emperical_MCMC_SE <- function(emp_se, nsim) {
   emp_se / sqrt(2*nsim - 1)
@@ -64,6 +72,8 @@ emperical_MCMC_SE <- function(emp_se, nsim) {
 #'
 #' @return numeric vector with two values: (1) Probability that the 95\% CI contains the true value and (2) MCMC Standard Error
 #'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
 #' @export
 coverage <- function(CI, true_param_value) {
   cvr <- mean(vapply(CI, function(x) (x[1] <= true_param_value) & (true_param_value <= x[2]), 0))
@@ -75,36 +85,42 @@ coverage <- function(CI, true_param_value) {
 
 #' Coverage MCMC Standard Error
 #'
-#' @param coverage XX
-#' @param nsim XX
+#' @param coverage scalar. Coverage of the scenario under investigation.
+#' @param nsim scalar. Number of iterations used in the scenario.
 #'
-#' @return XX
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
+#' @return MCMC standard error of coverage.
 coverage_MCMC_SE <- function(coverage, nsim) {
   sqrt((coverage * (1-coverage))/(nsim))
 }
 
 #' Mean Squared Error (MSE)
 #'
-#' @param values XX
-#' @param ref XX
+#' @param simulated_param_values k-length numeric vector. k >= 1 and holds the parameter values of the estimated parameters.
+#' @param true_param_value numeric. Value of the ground-truth parameter.
 #'
-#' @return XX
+#' @return Mean-Squared Error
+#'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
 #'
 #' @export
-MSE <- function(values, ref) {
+MSE <- function(simulated_param_values, true_param_value) {
   return(
-    mean((values - ref)^2)
+    mean((simulated_param_values - true_param_value)^2)
   )
 }
 
 #' MSE MCMC Standard Error
 #'
-#' @param MSE
-#' @param estimates
-#' @param true_value
-#' @param nsim
+#' @param MSE Mean-Squared Error. \link[sleepsimReval]{MSE}.
+#' @param estimates k-length numeric vector. k >= 1 and holds the parameter values of the estimated parameters.
+#' @param true_value numeric. Value of the ground-truth parameter.
+#' @param nsim scalar. Number of iterations used in the scenario.
 #'
-#' @return YY
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
+#' @return MCMC Standard Error of MSE.
 MSE_MCMC_SE <- function(MSE, estimates, true_value, nsim) {
   a <- sum(((estimates - true_value)^2 - MSE)^2)
   b <- nsim * (nsim - 1)
@@ -125,7 +141,7 @@ MSE_MCMC_SE <- function(MSE, estimates, true_value, nsim) {
 #' @importFrom multimode modetest
 #'
 #' @return data frame containing:
-#' \itemize{
+#' \describe{
 #'   \item{bias}{percent bias of the simulation scenario, computed as a percentage relative to the true value.}
 #'   \item{bias_mcmc_se}{MCMC standard error of bias estimate, computed as a percentage relative to the bias estimate.}
 #'   \item{empirical_se}{empirical standard error computed from the simulated values.}
@@ -150,11 +166,12 @@ MSE_MCMC_SE <- function(MSE, estimates, true_value, nsim) {
 #'                                    .$lower_cci, .$upper_cci, FALSE))
 #' }
 #'
+#' @export
 summarize_simulation_scenario <- function(true_values, simulated_values,
                                           lower_cci, upper_cci,
                                           compute_multimodal = FALSE) {
   out_bias <- unname(bias(true_values[1], simulated_values))
-  out_MSE <- unname(MSE(s, true_values[1]))
+  out_MSE <- unname(MSE(simulated_values, true_values[1]))
   out_ESE <- unname(emperical_SE(simulated_values))
   # Compute coverage
   cci <- map2(lower_cci, upper_cci, function(x,y) c(x, y))
@@ -177,7 +194,7 @@ summarize_simulation_scenario <- function(true_values, simulated_values,
     "bias_corr_coverage_mcmc_se" = out_coverage_bc[2]
   )
   if(compute_multimodal) {
-    df$multimodal <- modetest(s, mod0 = 1)$p.value
+    df$multimodal <- modetest(simulated_values, mod0 = 1)$p.value
   }
   return(df)
 }

@@ -7,11 +7,20 @@
 MSE_MCMC_SE(MSE, estimates, true_value, nsim)
 }
 \arguments{
-\item{nsim}{}
+\item{MSE}{Mean-Squared Error. \link[sleepsimReval]{MSE}.}
+
+\item{estimates}{k-length numeric vector. k >= 1 and holds the parameter values of the estimated parameters.}
+
+\item{true_value}{numeric. Value of the ground-truth parameter.}
+
+\item{nsim}{scalar. Number of iterations used in the scenario.}
 }
 \value{
-YY
+MCMC Standard Error of MSE.
 }
 \description{
 MSE MCMC Standard Error
+}
+\seealso{
+Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
 }

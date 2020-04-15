@@ -1,9 +1,5 @@
 ## Utility functions to check for convergence between two MCMC chains
 
-# Trace plots
-library(ggplot2)
-library(coda)
-
 #' Make trace plots of the convergence of two chains
 #'
 #' @seealso Explanation in \link[coda]{traceplot}.

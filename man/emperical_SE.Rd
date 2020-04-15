@@ -15,3 +15,6 @@ numeric vector with two values: (1) Emperical standard error and (2) MCMC SE of 
 \description{
 Compute the emperical SE
 }
+\seealso{
+Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+}

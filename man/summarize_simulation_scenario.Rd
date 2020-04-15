@@ -23,7 +23,7 @@ summarize_simulation_scenario(
 }
 \value{
 data frame containing:
-\itemize{
+\describe{
   \item{bias}{percent bias of the simulation scenario, computed as a percentage relative to the true value.}
   \item{bias_mcmc_se}{MCMC standard error of bias estimate, computed as a percentage relative to the bias estimate.}
   \item{empirical_se}{empirical standard error computed from the simulated values.}

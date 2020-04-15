@@ -7,10 +7,12 @@
 postprocess_ci(z, m)
 }
 \arguments{
-\item{m}{}
+\item{z}{list. contains the credible intervals of the transition probabilities.}
+
+\item{m}{integer. Number of hidden states}
 }
 \value{
-
+data frame in which each CCI has been placed in its own column. (with _lower and _upper appended).
 }
 \description{
 Postprocess credible intervals

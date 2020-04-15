@@ -4,16 +4,19 @@
 \alias{MSE}
 \title{Mean Squared Error (MSE)}
 \usage{
-MSE(values, ref)
+MSE(simulated_param_values, true_param_value)
 }
 \arguments{
-\item{values}{XX}
+\item{simulated_param_values}{k-length numeric vector. k >= 1 and holds the parameter values of the estimated parameters.}
 
-\item{ref}{XX}
+\item{true_param_value}{numeric. Value of the ground-truth parameter.}
 }
 \value{
-XX
+Mean-Squared Error
 }
 \description{
 Mean Squared Error (MSE)
+}
+\seealso{
+Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
 }

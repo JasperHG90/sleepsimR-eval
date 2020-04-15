@@ -7,13 +7,16 @@
 coverage_MCMC_SE(coverage, nsim)
 }
 \arguments{
-\item{coverage}{XX}
+\item{coverage}{scalar. Coverage of the scenario under investigation.}
 
-\item{nsim}{XX}
+\item{nsim}{scalar. Number of iterations used in the scenario.}
 }
 \value{
-XX
+MCMC standard error of coverage.
 }
 \description{
 Coverage MCMC Standard Error
+}
+\seealso{
+Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
 }

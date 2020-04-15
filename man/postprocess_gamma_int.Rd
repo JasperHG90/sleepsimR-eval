@@ -7,10 +7,12 @@
 postprocess_gamma_int(z, m)
 }
 \arguments{
-\item{m}{}
+\item{z}{list. contains the MAP values of the transition probabilities.}
+
+\item{m}{integer. Number of hidden states}
 }
 \value{
-
+data frame in which each parameter estimate has been placed in its own column.
 }
 \description{
 Postprocess utility function for gamma_prob_bar

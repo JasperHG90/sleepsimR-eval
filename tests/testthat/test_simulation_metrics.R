@@ -5,11 +5,18 @@ test_that("Can compute bias and MCMC error for bias", {
   tv <- 5
   # Simulated values
   set.seed(4445896)
-  sv <- tv + rnorm(500)
+  noise <- rnorm(500)
+  sv <- tv + noise
   # Compute
   b <- bias(tv, sv)
-  expect_equal(unname(round(b, 2)), c(-0.01, 0.05))
+  # Bias should be equal to mean noise value
+  expect_equal(unname(round(b, 5)), c(round(mean(noise), 5), 0.04546))
   expect_named(b, c("bias", "MCMC_SE"))
+  # Check if MCMC SE goes down as number of iterations increases
+  noise <- rnorm(1500)
+  sv <- tv + noise
+  b2 <- bias(tv, sv)
+  expect_lt(b2[2], b[2])
 })
 
 test_that("Can compute emperical SE and MCMC error", {
