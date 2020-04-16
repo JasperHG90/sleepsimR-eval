@@ -176,6 +176,7 @@ average_model_SE_mcmc_se <- function(SE, n_sim, modSE) {
 #' @param simulated_values vector of length n. Contains simulated values.
 #' @param lower_cci vector of length n. Lower 95\% CCI.
 #' @param lower_cci vector of length n. Upper 95\% CCI.
+#' @param SE vector of length n. Standard Error of the posterior distribution.
 #' @param compute_multimodal boolean. If TRUE, this function will compute a test on the simulated parameter values to check if the distribution of parameter estimates is multimodal. See \link[multimode]{modetest}.
 #'
 #' @importFrom multimode modetest
@@ -186,6 +187,8 @@ average_model_SE_mcmc_se <- function(SE, n_sim, modSE) {
 #'   \item{bias_mcmc_se}{MCMC standard error of bias estimate, computed as a percentage relative to the bias estimate.}
 #'   \item{empirical_se}{empirical standard error computed from the simulated values.}
 #'   \item{empirical_se_mcmc_se}{MCMC standard error of the empirical SE.}
+#'   \item{modSE}{model standard error computed from the simulated values.}
+#'   \item{modSE_mcmc_se}{MCMC standard error of the model SE.}
 #'   \item{MSE}{Mean-Squared Error of the simulated values.}
 #'   \item{MSE_mcmc_se}{MCMC standard error of the simulated values.}
 #'   \item{coverage}{Coverage given the 95\% CCI.}
@@ -208,7 +211,7 @@ average_model_SE_mcmc_se <- function(SE, n_sim, modSE) {
 #'
 #' @export
 summarize_simulation_scenario <- function(true_values, simulated_values,
-                                          lower_cci, upper_cci,
+                                          lower_cci, upper_cci, SE = NULL,
                                           compute_multimodal = FALSE) {
   out_bias <- unname(bias(true_values[1], simulated_values))
   out_MSE <- unname(MSE(simulated_values, true_values[1]))
@@ -223,11 +226,8 @@ summarize_simulation_scenario <- function(true_values, simulated_values,
     "bias_mcmc_se" = out_bias[2],
     "empirical_se" = out_ESE[1],
     "empirical_se_mcmc_se" = out_ESE[2],
-    "MSE" = out_MSE,
-    "MSE_mcmc_se" = MSE_MCMC_SE(out_MSE,
-                                simulated_values,
-                                true_values[1],
-                                length(simulated_values)),
+    "MSE" = out_MSE[1],
+    "MSE_mcmc_se" = out_MSE[2],
     "coverage" = out_coverage[1],
     "coverage_mcmc_se" = out_coverage[2],
     "bias_corr_coverage" = out_coverage_bc[1],
@@ -235,6 +235,11 @@ summarize_simulation_scenario <- function(true_values, simulated_values,
   )
   if(compute_multimodal) {
     df$multimodal <- modetest(simulated_values, mod0 = 1)$p.value
+  }
+  if(!is.null(SE)) {
+    out_modSE <- unname(average_model_SE(SE))
+    df$modSE = out_modSE[1]
+    df$modSE_mcmc_se = out_modSE[2]
   }
   return(df)
 }

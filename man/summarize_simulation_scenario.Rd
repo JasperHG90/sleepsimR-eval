@@ -9,6 +9,7 @@ summarize_simulation_scenario(
   simulated_values,
   lower_cci,
   upper_cci,
+  SE = NULL,
   compute_multimodal = FALSE
 )
 }
@@ -19,6 +20,8 @@ summarize_simulation_scenario(
 
 \item{lower_cci}{vector of length n. Upper 95\% CCI.}
 
+\item{SE}{vector of length n. Standard Error of the posterior distribution.}
+
 \item{compute_multimodal}{boolean. If TRUE, this function will compute a test on the simulated parameter values to check if the distribution of parameter estimates is multimodal. See \link[multimode]{modetest}.}
 }
 \value{
@@ -28,6 +31,8 @@ data frame containing:
   \item{bias_mcmc_se}{MCMC standard error of bias estimate, computed as a percentage relative to the bias estimate.}
   \item{empirical_se}{empirical standard error computed from the simulated values.}
   \item{empirical_se_mcmc_se}{MCMC standard error of the empirical SE.}
+  \item{modSE}{model standard error computed from the simulated values.}
+  \item{modSE_mcmc_se}{MCMC standard error of the model SE.}
   \item{MSE}{Mean-Squared Error of the simulated values.}
   \item{MSE_mcmc_se}{MCMC standard error of the simulated values.}
   \item{coverage}{Coverage given the 95\% CCI.}

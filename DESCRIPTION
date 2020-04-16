@@ -6,29 +6,26 @@ Author: Jasper Ginn
 Maintainer: Jasper Ginn <jasperginn@gmail.com>
 Description: This R library contains functions that I use
     to evaluate the results of my simulation study. It also
-    contains some helper functions to parse the results.
+    contains other functions that I use to evaluate the 
+    empirical example in my simulation study.
 License: MIT
 Encoding: UTF-8
 LazyData: true
 Imports:
-    jsonlite,
-    lubridate,
-    magrittr,
-    ggplot2,
-    future,
     sleepsimR,
+    sleepsimRdata,
+    lubridate,
+    ggplot2,
     dplyr,
     tidyr,
     purrr,
     coda,
-    mcmcplots,
-    mHMMbayes,
-    multimode
+    mcmcplots
 Suggests: 
     testthat
 Remotes: 
     JasperHG90/sleepsimR@99e7a8e0dabf4f732d0ce1bab3a8a527f42ca73d,
-    emmekeaarts/mHMMbayes@369420e05cb96e6af761a8bd9bd30b8539d27a24
+    JasperHG90/sleepsimRdata
 URL:
     https://github.com/JasperHG90/sleepsimReval
 BugReports:

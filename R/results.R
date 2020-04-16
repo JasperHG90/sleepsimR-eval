@@ -59,15 +59,15 @@ postprocess_gamma_int <- function(z, m) {
   nams <- c()
   for(idx_col in 1:m) {
     for(idx_row in 1:m) {
-      nams <- c(nams, paste0("int_S",idx_col, "toS", idx_row))
+      nams <- c(nams, paste0("S",idx_col, "toS", idx_row))
     }
   }
   # Subset mean
-  smean <- z$mean
+  out <- c(z$median, z$SE)
   # Ignore SE --> names
-  names(smean) <- nams
+  names(out) <- c(paste0(nams, "_median"), paste0(nams, "_SE"))
   # data frame and return
-  return(data.frame(smean))
+  return(data.frame(out))
 }
 
 #' Postprocess credible intervals
