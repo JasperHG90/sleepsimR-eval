@@ -18,7 +18,8 @@
 #' @importFrom grDevices rgb
 theme_thesis <- function(text_size = 12,
                          line_size = text_size / 170,
-                         rect_size = text_size / 170){
+                         rect_size = text_size / 170,
+                         center_title = FALSE){
   # Take theme minimal ...
   theme_minimal(base_size = text_size) %+replace%
     # ... and replace these values
@@ -45,6 +46,12 @@ theme_thesis <- function(text_size = 12,
       axis.text = element_text(
         color = rgb(105, 105, 105, maxColorValue = 255),
         size = rel(1.4)),
+      strip.text = element_text(
+        color = rgb(25, 43, 65, maxColorValue = 255),
+        face = "bold",
+        hjust = ifelse(center_title, 0.5, 0),
+        size = rel(1.4)
+      ),
       axis.line = element_line(color = rgb(105, 105, 105, maxColorValue = 255), size = 0.5),
       complete = TRUE
     )

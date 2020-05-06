@@ -7,7 +7,8 @@
 theme_thesis(
   text_size = 12,
   line_size = text_size/170,
-  rect_size = text_size/170
+  rect_size = text_size/170,
+  center_title = FALSE
 )
 }
 \arguments{
