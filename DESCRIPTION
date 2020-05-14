@@ -29,7 +29,7 @@ Suggests:
     testthat
 Remotes: 
     JasperHG90/sleepsimR@75fca08,
-    JasperHG90/sleepsimRdata,
+    JasperHG90/sleepsimRdata@cabeaef,
     emmekeaarts/mHMMbayes@369420e05cb96e6af761a8bd9bd30b8539d27a24
 URL:
     https://github.com/JasperHG90/sleepsimReval
